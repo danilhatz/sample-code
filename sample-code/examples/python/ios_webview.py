@@ -21,9 +21,9 @@ class WebViewIOSTests(unittest.TestCase):
             command_executor='http://127.0.0.1:4723/wd/hub',
             desired_capabilities={
                 'app': app,
-                'deviceName': 'iPhone Simulator',
+                'deviceName': 'iPhone 4s',
                 'platformName': 'iOS',
-                'platformVersion': '7.1'
+                'platformVersion': '9.3'
             })
 
     def tearDown(self):
@@ -31,7 +31,7 @@ class WebViewIOSTests(unittest.TestCase):
 
     def test_get_url(self):
         url_el = self.driver.find_element_by_xpath('//UIAApplication[1]/UIAWindow[1]/UIATextField[1]')
-        url_el.send_keys('http://www.google.com')
+        url_el.send_keys('www.google.com')
 
         go_el = self.driver.find_element_by_accessibility_id('Go')
         go_el.click()

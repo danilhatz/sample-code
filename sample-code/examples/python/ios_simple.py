@@ -17,8 +17,8 @@ class SimpleIOSTests(unittest.TestCase):
             desired_capabilities={
                 'app': app,
                 'platformName': 'iOS',
-                'platformVersion': '8.3',
-                'deviceName': 'iPhone 6'
+                'platformVersion': '9.3',
+                'deviceName': 'iPhone 4s'
             })
 
     def tearDown(self):
