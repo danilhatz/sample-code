@@ -36,7 +36,7 @@ class ComplexIOSTests(unittest.TestCase):
                 'platformName': 'iOS',
                 'platformVersion': '9.3',
                 'deviceName': 'iPhone 4s',
-                # 'context': 'NATIVE_APP'
+                'context': 'NATIVE_APP'
 
             })
         self._values = []
@@ -44,170 +44,85 @@ class ComplexIOSTests(unittest.TestCase):
     def tearDown(self):
         self.driver.quit()
 
-    def _open_menu_position(self, index):
-        # Opens up the menu at position [index] : starts at 0.
-        table = self.driver.find_element_by_class_name("UIATableView")
-        self._row = table.find_elements_by_class_name("UIATableCell")[index]
-        self._row.click()
+    # def _open_menu_position(self, index):
+    #     # Opens up the menu at position [index] : starts at 0.
+    #     table = self.driver.find_element_by_class_name("UIATableView")
+    #     self._row = table.find_elements_by_class_name("UIATableCell")[index]
+    #     self._row.click()
 
-    def test_click_element(self):
-        self.driver.swipe(129, 300, 146, 90, duration=800)
-        self.driver.find_element_by_xpath('//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]').click()
-        self.driver.find_element_by_xpath(
-            '//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]/UIAStaticText[1]').click()
-        decisions = self.driver.find_element_by_xpath(
-            '//UIAApplication[1]/UIAWindow[4]/UIAActionSheet[1]/UIACollectionView[1]/UIACollectionCell[1]')
-        decisions.click()
-        self.assertTrue(decisions)
-        self.driver.find_element_by_xpath('//UIAApplication[1]/UIAWindow[1]/UIANavigationBar[1]/UIAButton[1]').click()
-        self.driver.find_element_by_xpath('//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[2]').click()
-        cell_is_displayed = self.driver.find_element_by_xpath(
-            "//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]").is_displayed
-
-        self.assertTrue(cell_is_displayed, 'Cell should be visible')
+    # def test_click_element(self):
+    #     self.driver.swipe(129, 300, 146, 90, duration=800)
+    #     self.driver.find_element_by_xpath('//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]').click()
+    #     self.driver.find_element_by_xpath(
+    #         '//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]/UIAStaticText[1]').click()
+    #     decisions = self.driver.find_element_by_xpath(
+    #         '//UIAApplication[1]/UIAWindow[4]/UIAActionSheet[1]/UIACollectionView[1]/UIACollectionCell[1]')
+    #     decisions.click()
+    #     self.assertTrue(decisions)
+    #     self.driver.find_element_by_xpath('//UIAApplication[1]/UIAWindow[1]/UIANavigationBar[1]/UIAButton[1]').click()
+    #     self.driver.find_element_by_xpath('//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[2]').click()
+    #     cell_is_displayed = self.driver.find_element_by_xpath(
+    #         "//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[1]").is_displayed
+    #
+    #     self.assertTrue(cell_is_displayed, 'Cell should be visible')
 
     def test_swipe(self):
         self.driver.find_element_by_xpath("//UIAApplication[1]/UIAWindow[1]/UIATableView[1]/UIATableCell[5]").click()
-        self.driver.swipe(start_x=109, start_y=160, end_x=109, end_y=70).perform()
+        self.driver.swipe(start_x=109, start_y=230, end_x=109, end_y=160)
         date = self.driver.find_element_by_xpath('//UIAApplication[1]/UIAWindow[1]/UIAStaticText[1]')
         future_date = (datetime.datetime.now() + datetime.timedelta(days=2)).strftime("%B %d, %Y, %I:%M %p").lstrip(
             "0").replace(" 0", " ")
         self.assertRegexpMatches(date.get_attribute("name"), future_date)
 
-
-    # def test_find_element(self):
-    #         # first view in UICatalog is a table
-    #         table = self.driver.find_element_by_class_name("UIATableView")
-    #         self.assertIsNotNone(table)
+    # def test_frames(self):
+    #         # go into webview frame
+    #         self._open_menu_position(15)
     #
-    #         # is number of cells/rows inside table correct
-    #         rows = table.find_elements_by_class_name("UIATableCell")
-    #         self.assertEqual(18, len(rows))
+    #         # get the contexts and switch to webview
+    #         contexts = self.driver.contexts
+    #         self.assertEqual([u'NATIVE_APP', u'WEBVIEW_1'], contexts)
+    #         self.driver.switch_to.context(contexts[1])
     #
-    #         # is first one about buttons
-    #         self.assertEqual(rows[0].get_attribute("name"), "Action Sheets")
+    #         # Find the store link
+    #         sleep(4) # let the page load, perhaps
+    #         logo = self.driver.find_element_by_xpath('//*/UIATextField[@value="http://apple.com"]')
+    #         self.assertIsNotNone(logo)
     #
-    #         # there is nav bar inside the app
-    #         nav_bar = self.driver.find_element_by_class_name("UIANavigationBar")
-    #         self.assertTrue(nav_bar)
-
-    def test_frames(self):
-            # go into webview frame
-            self._open_menu_position(15)
-
-            # get the contexts and switch to webview
-            contexts = self.driver.contexts
-            self.assertEqual([u'NATIVE_APP', u'WEBVIEW_1'], contexts)
-            self.driver.switch_to.context(contexts[1])
-
-            # Find the store link
-            sleep(4) # let the page load, perhaps
-            logo = self.driver.find_element_by_xpath('//*/UIATextField[@value="http://apple.com"]')
-            self.assertIsNotNone(logo)
-
-            # leave the webview
-            self.driver.switch_to.context(contexts[0])
-
-            # Verify we are out of the webview
-            scroll_after = self.driver.find_element_by_class_name("UIAScrollView")
-            self.assertTrue(scroll_after)
-
-    # def test_location(self):
-    #         # get third row location
-    #         row = self.driver.find_elements_by_class_name("UIATableCell")[2]
-    #         self.assertEqual(row.location['x'], 0)
-    #         self.assertEqual(row.location['y'], 178.8125)
-
-    # def test_screenshot(self):
-    #         # make screenshot and get is as base64
-    #         screenshot = self.driver.get_screenshot_as_base64()
-    #         self.assertTrue(screenshot)
+    #         # leave the webview
+    #         self.driver.switch_to.context(contexts[0])
     #
-    #         # make screenshot and save it to the local filesystem
-    #         success = self.driver.get_screenshot_as_file("foo.png")
-    #         self.assertTrue(success)
-    #         self.assertTrue(os.path.isfile("foo.png"))
+    #         # Verify we are out of the webview
+    #         scroll_after = self.driver.find_element_by_class_name("UIAScrollView")
+    #         self.assertTrue(scroll_after)
+
+    # def test_text_field_edit(self):
+    #         # go to the text fields section
+    #         self._open_menu_position(13)
     #
-    #         # get rid of the file
-    #         os.remove("foo.png")
-
-    def test_text_field_edit(self):
-            # go to the text fields section
-            self._open_menu_position(13)
-
-            text_field = self.driver.find_elements_by_class_name("UIATextField")[0]
-
-            # get default/empty text
-            default_val = text_field.get_attribute("value")
-
-            # write some random text to element
-            rnd_string = str_generator()
-            text_field.send_keys(rnd_string)
-            self.assertEqual(text_field.get_attribute("value"), rnd_string)
-
-            # clear and check if is empty/has default text
-            text_field.clear()
-            self.assertEqual(text_field.get_attribute("value"), default_val)
-
-    def test_alert_interaction(self):
-            # go to the alerts section
-            self.driver.find_element_by_name('Alert Views').click()
-            triggerOk = self.driver.find_element_by_accessibility_id("Simple")
-
-            # TOFIX: Looks like alert object is not proper state
-            # something to do with UIActionSheet vs. UIAlertView?
-            # triggerOk = elements[0]
-            triggerOk.click()
-            alert = self.driver.switch_to_alert()
-
-            # dismiss alert
-            alert.accept()
-
-            # trigger modal alert with cancel & ok buttons
-            triggerOkCancel = self.driver.find_element_by_accessibility_id("Okay / Cancel")
-            triggerOkCancel.click()
-            alert = self.driver.switch_to_alert()
-
-            # check if title of alert is correct
-            self.assertEqual(alert.text, "A Short Title Is Best A message should be a short, complete sentence.")
-            alert.accept()
-
-    def test_slider(self):
-            # go to controls
-            self._open_menu_position(10)
-
-            # get the slider
-            slider = self.driver.find_element_by_class_name("UIASlider")
-            self.assertEqual(slider.get_attribute("value"), "42%")
-
-            slider.set_value(0)
-            self.assertEqual(slider.get_attribute("value"), "0%")
-
-    # def test_sessions(self):
-    #         data = json.loads(urllib2.urlopen("http://localhost:4723/wd/hub/sessions").read())
-    #         self.assertEqual(self.driver.session_id, data['sessionId'])
-
-    def test_size(self):
-            table = self.driver.find_element_by_class_name("UIATableView").size
-            row = self.driver.find_elements_by_class_name("UIATableCell")[0].size
-            self.assertEqual(table['width'], row['width'])
-            self.assertNotEqual(table['height'], row['height'])
-
-    def test_source(self):
-            # get main view soruce
-            source_main = self.driver.page_source
-            self.assertIn("UIATableView", source_main)
-            self.assertIn("Text Fields", source_main)
-
-            # got to text fields section
-            self._open_menu_position(13)
-            sleep(10)
-            source_textfields = self.driver.page_source
-            self.assertIn("UIAStaticText", source_textfields)
-            self.assertIn("Text Fields", source_textfields)
-
-            self.assertNotEqual(source_main, source_textfields)
-
+    #         text_field = self.driver.find_elements_by_class_name("UIATextField")[0]
+    #
+    #         # get default/empty text
+    #         default_val = text_field.get_attribute("value")
+    #
+    #         # write some random text to element
+    #         rnd_string = str_generator()
+    #         text_field.send_keys(rnd_string)
+    #         self.assertEqual(text_field.get_attribute("value"), rnd_string)
+    #
+    #         # clear and check if is empty/has default text
+    #         text_field.clear()
+    #         self.assertEqual(text_field.get_attribute("value"), default_val)
+    #
+    # def test_slider(self):
+    #         # go to controls
+    #         self._open_menu_position(10)
+    #
+    #         # get the slider
+    #         slider = self.driver.find_element_by_class_name("UIASlider")
+    #         self.assertEqual(slider.get_attribute("value"), "42%")
+    #
+    #         slider.set_value(0)
+    #         self.assertEqual(slider.get_attribute("value"), "0%")
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(ComplexIOSTests)
